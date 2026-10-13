@@ -1,0 +1,99 @@
+#for connectivity
+on boot
+    setprop ro.connectivity.chiptype ${ro.boot.odm.conn.chiptype}
+    setprop ro.connectivity.sub_chiptype ${ro.boot.odm.conn.schiptype}
+
+#start antenna_fpga download
+on property:sys.system.serv=up
+    write /sys/devices/platform/antennafpga.0/ice40bin_download_dir "start"
+
+on property:sys.system.serv=run
+    class_start server
+    setprop sys.system.serv up
+
+#mkdir data/update for erecovery download or hota upload data, for selinux control
+on property:odm.sys.make_update_dir=true
+    mkdir /data/update 0777 system cache
+    restorecon /data/update
+    setprop odm.sys.make_update_dir false
+
+#remove dm device for resize_data_partition_without_reboot
+on property:odm.sys.remove_dm=true
+    unlink /dev/block/dm-0
+    unlink /dev/block/dm-1
+    unlink /dev/block/dm-2
+    unlink /dev/block/dm-3
+    unlink /dev/block/dm-4
+    remove_dm_device system
+    remove_dm_device vendor
+    remove_dm_device cust
+    remove_dm_device hw_product
+    remove_dm_device odm
+    setprop odm.sys.remove_dm false
+
+#for log service
+service xlogctl_service /sbin/hilogcat-early -t 0
+    class server
+    user root
+    oneshot
+    seclabel u:r:xlogcat:s0
+
+service xlogview_service /sbin/hilogcat-early -t 2
+    class server
+    user root
+    disabled
+    oneshot
+    seclabel u:r:xlogcat:s0
+
+service faclog_service /system/bin/factory_log_service -m 2
+    class server
+    user root
+    disabled
+    oneshot
+    seclabel u:r:faclogservice:s0
+
+service modemlogcat  /vendor/bin/modemlogcat_lte -l
+    class server
+    disabled
+    oneshot
+
+service applogcat /system/bin/logcatz -t 1 -z 10 -n 5 -f /data/log/android_logs/applogcat-log
+    class server
+    user root
+    disabled
+    seclabel u:r:glogcat:s0
+
+service rillogcat /system/bin/logcatz -t 3 -z 5 -n 5 -f /data/log/android_logs/rillogcat-log
+    class server
+    user root
+    disabled
+    seclabel u:r:glogcat:s0
+
+service kmsglogcat /sbin/hilogcat-early -b kmsglogcat
+    user root
+    disabled
+    seclabel u:r:xlogcat:s0
+
+service chargelogcat /sbin/hilogcat-early -b chargelogcat-r
+    class server
+    user root
+    disabled
+    seclabel u:r:xlogcat:s0
+
+service sleeplogcat /sbin/hilogcat-early -b sleeplogcat
+    class server
+    user root
+    disabled
+    seclabel u:r:glogcat:s0
+
+service kmsgcat_cp /sbin/hilogcat-early -b kmsgcat_cp
+    class server
+    user root
+    disabled
+    seclabel u:r:xlogcat:s0
+
+on property:odm.recovery.start_all_srv=false
+    start xlogctl_service
+
+on property:ro.logsystem.usertype=*
+    write /proc/log-usertype ${ro.logsystem.usertype}
