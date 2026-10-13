@@ -1,0 +1,25 @@
+# mount point       fstype    device                                                                flags
+/sdcard1            vfat      /dev/block/mmcblk1p1                                                  flags=display="Sdcard1";
+/storage            ramdisk   defaults                                                              flags=display="Storage";logical;
+/dload              ramdisk   defaults                                                              flags=display="Dload";logical;
+/system             ext4      /dev/block/bootdevice/by-name/system                                  flags=display="System";backup=1;
+/system_image       emmc      /dev/block/bootdevice/by-name/system                                  flags=display="System image";backup=1;flashimg=1;
+/vendor             ext4      /dev/block/bootdevice/by-name/vendor                                  flags=display="Vendor";backup=1;
+/vendor_image       emmc      /dev/block/bootdevice/by-name/vendor                                  flags=display="Vendor image";backup=1;flashimg=1;
+/hw_product         ext4      /dev/block/bootdevice/by-name/hw_product                              flags=display="Hw_product";
+/version            ext4      /dev/block/bootdevice/by-name/version                                 flags=display="Version";
+/cache              ext4      /dev/block/bootdevice/by-name/cache                                   flags=display="Cache";
+/data               f2fs      /dev/block/bootdevice/by-name/userdata                                flags=display="Data";
+/misc               emmc      /dev/block/bootdevice/by-name/misc                                    flags=display="Misc";backup=1;flashimg=1;
+/boot               emmc      /dev/block/bootdevice/by-name/boot                                    flags=display="Boot";backup=1;flashimg=1;
+/recovery           emmc      /dev/block/bootdevice/by-name/recovery                                flags=display="Recovery";backup=1;flashimg=1;
+/cust               ext4      /dev/block/bootdevice/by-name/cust                                    flags=display="Cust";
+/cust_image         emmc      /dev/block/bootdevice/by-name/cust                                    flags=display="Cust image";backup=1;flashimg=1;
+/uboot              emmc      /dev/block/bootdevice/by-name/uboot                                   flags=display="Uboot";
+/log                ext4      /dev/block/bootdevice/by-name/log                                     flags=display="Log";
+/metadata           ext4      /dev/block/bootdevice/by-name/metadata                                flags=display="Metadata";
+/newsys             ext4      /dev/block/bootdevice/by-name/system                                  flags=display="Newsys";
+/nvdata             ext4      /dev/block/bootdevice/by-name/nvdata                                  flags=display="Nvdata";
+/usb                vfat      /dev/block/sdd1                                                       flags=display="Usb";
+/usb_ufs            vfat      /dev/block/sdd1                                                       flags=display="Usb_ufs";
+/usb_emmc           vfat      /dev/block/sda1                                                       flags=display="Usb_emmc";
