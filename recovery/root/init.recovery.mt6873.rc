@@ -3,7 +3,7 @@ import /vendor/etc/init/aptouch_daemon.rc
 
 on init
     # 防止休眠 / 防止熄屏导致内核 panic 重启
-    write /proc/sys/kernel/panic_on_oops 0
+    write /proc/sys/kernel/panic_on_oops 1
     write /sys/power/state on
     write /sys/power/autosleep off
     write /sys/power/wake_lock twrp_keep_on
