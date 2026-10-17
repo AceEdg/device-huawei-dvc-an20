@@ -1,5 +1,0 @@
-service wlan_assistant /vendor/bin/wlan_assistant
-    class late_start
-    user wifi
-    group system gps inet
-    oneshot
