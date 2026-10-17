@@ -1,8 +1,8 @@
 # Huawei Enjoy 20 Pro (DVC-AN20) / MT6873
-# 三分区 recovery 打包：
-#   recovery_kernel.img  -> recovery         (47MB, 内核 + dummy ramdisk, header v2)
-#   recovery_ramdisk.img -> recovery_ramdisk (32MB, 纯 ramdisk, header v0)
-#   recovery_vendor.img  -> recovery_vendor  (16MB, dummy vendor)
+# 三分区 recovery 打包（参数来自原厂 split_img 回读）：
+#   recovery.img        -> recovery         (47MB, 内核+dtb+dtbo+dummy ramdisk, header v2, base 0x40078000)
+#   recovery_ramdisk.img -> recovery_ramdisk (32MB, 纯 ramdisk, header v0, base 0x80000000)
+#   recovery_vendor.img  -> recovery_vendor  (16MB, dummy vendor, header v2, base 0x10078000)
 
 LOCAL_PATH := $(call my-dir)
 
@@ -15,17 +15,23 @@ RECOVERY_KERNEL_DUMMY_RAMDISK := $(PRODUCT_OUT)/recovery_kernel_dummy_ramdisk
 $(RECOVERY_KERNEL_DUMMY_RAMDISK):
 	$(hide) echo "dummy" > $@
 
+# 原厂参数: base 0x40078000, header v2, ramdisk_offset 0x16f88000, second 0x00e88000, tags 0x0bc08000
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+TARGET_PREBUILT_DTBO := $(DEVICE_PATH)/prebuilt/dtbo.img
 INTERNAL_CUSTOM_RECOVERYIMAGE_ARGS := \
-	--base 0x80000000 \
+	--base 0x40078000 \
 	--pagesize 2048 \
 	--kernel $(INSTALLED_KERNEL_TARGET) \
 	--ramdisk $(RECOVERY_KERNEL_DUMMY_RAMDISK) \
-	--cmdline "buildvariant=$(TARGET_BUILD_VARIANT)" \
+	--dtb $(TARGET_PREBUILT_DTB) \
+	--recovery_dtbo $(TARGET_PREBUILT_DTBO) \
+	--cmdline "bootopt=64S3,32N2,64N2 buildvariant=$(TARGET_BUILD_VARIANT)" \
 	--kernel_offset 0x00008000 \
-	--ramdisk_offset 0x02000000 \
-	--second_offset 0x00f00000 \
-	--tags_offset 0x00000100 \
-	--header_version 0
+	--ramdisk_offset 0x16f88000 \
+	--second_offset 0x00e88000 \
+	--tags_offset 0x0bc08000 \
+	--dtb_offset 0x0bc08000 \
+	--header_version 2
 
 .PHONY: recoveryimage
 recoveryimage: recovery_ramdiskimage $(INSTALLED_RECOVERYKERNELIMAGE_TARGET) $(INSTALLED_RECOVERYIMAGE_TARGET)
@@ -82,17 +88,19 @@ $(INSTALLED_RECVENDOR_RAMDISK_TARGET): $(MKBOOTFS) $(MINIGZIP) $(INSTALLED_RECVE
 	$(hide) $(MKBOOTFS) -d $(PRODUCT_OUT) $(INSTALLED_RECVENDOR_RAMDISK_PLACEHOLDER_TARGET) | $(MINIGZIP) > $@
 
 INSTALLED_RECVENDORIMAGE_TARGET := $(PRODUCT_OUT)/recovery_vendor.img
+# 原厂参数: base 0x10078000, header v2, ramdisk_offset 0x16f88000, second 0x00e88000, tags 0x0bc08000
 INTERNAL_CUSTOM_RECVENDORIMAGE_ARGS := \
-	--base 0x80000000 \
+	--base 0x10078000 \
 	--pagesize 2048 \
 	--kernel /dev/null \
 	--ramdisk $(INSTALLED_RECVENDOR_RAMDISK_TARGET) \
 	--cmdline "buildvariant=$(TARGET_BUILD_VARIANT)" \
 	--kernel_offset 0x00008000 \
-	--ramdisk_offset 0x02000000 \
-	--second_offset 0x00f00000 \
-	--tags_offset 0x00000100 \
-	--header_version 0
+	--ramdisk_offset 0x16f88000 \
+	--second_offset 0x00e88000 \
+	--tags_offset 0x0bc08000 \
+	--dtb_offset 0x0bc08000 \
+	--header_version 2
 
 .PHONY: recoveryvendorimage
 recoveryvendorimage: $(INSTALLED_RECVENDORIMAGE_TARGET)
