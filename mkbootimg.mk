@@ -88,7 +88,7 @@ $(INSTALLED_RECVENDOR_RAMDISK_TARGET): $(MKBOOTFS) $(MINIGZIP) $(INSTALLED_RECVE
 	$(hide) $(MKBOOTFS) -d $(PRODUCT_OUT) $(INSTALLED_RECVENDOR_RAMDISK_PLACEHOLDER_TARGET) | $(MINIGZIP) > $@
 
 INSTALLED_RECVENDORIMAGE_TARGET := $(PRODUCT_OUT)/recovery_vendor.img
-# 原厂参数: base 0x10078000, header v2, ramdisk_offset 0x16f88000, second 0x00e88000, tags 0x0bc08000
+# vendor 是占位镜像，用 header v0 避免 mkbootimg 强制要求 DTB
 INTERNAL_CUSTOM_RECVENDORIMAGE_ARGS := \
 	--base 0x10078000 \
 	--pagesize 2048 \
@@ -99,7 +99,7 @@ INTERNAL_CUSTOM_RECVENDORIMAGE_ARGS := \
 	--ramdisk_offset 0x16f88000 \
 	--second_offset 0x00e88000 \
 	--tags_offset 0x0bc08000 \
-	--header_version 2
+	--header_version 0
 
 .PHONY: recoveryvendorimage
 recoveryvendorimage: $(INSTALLED_RECVENDORIMAGE_TARGET)
