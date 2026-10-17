@@ -99,7 +99,6 @@ INTERNAL_CUSTOM_RECVENDORIMAGE_ARGS := \
 	--ramdisk_offset 0x16f88000 \
 	--second_offset 0x00e88000 \
 	--tags_offset 0x0bc08000 \
-	--dtb_offset 0x0bc08000 \
 	--header_version 2
 
 .PHONY: recoveryvendorimage
